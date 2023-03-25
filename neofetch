@@ -75,9 +75,9 @@ print_info() {
     info "CPU" cpu
     info "GPU" gpu
     info "Memory" memory
-    info "Network" network
-    info "Bluetooth" bluetooth
-    info "BIOS" bios
+    # info "Network" network
+    # info "Bluetooth" bluetooth
+    # info "BIOS" bios
 
     # info "GPU Driver" gpu_driver  # Linux/macOS only
     # info "Disk" disk
@@ -177,7 +177,7 @@ uptime_shorthand="on"
 # Example:
 # on:   '1801MiB / 7881MiB (22%)'
 # off:  '1801MiB / 7881MiB'
-memory_percent="on"
+memory_percent="off"
 
 # Change memory output unit.
 #
@@ -189,14 +189,14 @@ memory_percent="on"
 # kib  '1020928KiB / 7117824KiB'
 # mib  '1042MiB / 6951MiB'
 # gib: ' 0.98GiB / 6.79GiB'
-memory_unit="gib"
+memory_unit="mib"
 
 # Change memory output precision.
 #
 # Default: '2'
 # Values: integer ≥ 0
 # Flag:    --memory_precision
-mem_precision=2
+mem_precision=0
 
 # Packages
 
@@ -3405,7 +3405,7 @@ get_memory() {
         esac
     fi
 
-    memory="${mem_used} ${mem_label:-KiB} / ${mem_total} ${mem_label:-KiB} ${mem_perc:+(${mem_perc}%)}"
+    memory="${mem_used}${mem_label:-KiB} / ${mem_total}${mem_label:-KiB} ${mem_perc:+(${mem_perc}%)}"
 
     # Bars.
     case $memory_display in
