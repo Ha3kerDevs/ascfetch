@@ -25,6 +25,7 @@ def pre_check():
     assert os.path.islink('./hyfetch/scripts/neowofetch'), 'neowofetch is not a symbolic link'
     # subprocess.check_call(shlex.split('git diff-index --quiet HEAD --'))  # 'Please commit all changes before release'
 
+    print('Running shellcheck... (This may take a while)')
     subprocess.check_call(shlex.split('shellcheck neofetch'))
 
 
@@ -46,8 +47,8 @@ def edit_versions(version: str):
     path.write_text(json.dumps(content, ensure_ascii=False, indent=2))
 
     # 2. hyfetch/constants.py
-    print('Editing hyfetch/constants.py...')
-    path = Path('hyfetch/constants.py')
+    print('Editing hyfetch/__version__.py...')
+    path = Path('hyfetch/__version__.py')
     content = [f"VERSION = '{version}'" if l.startswith('VERSION = ') else l for l in path.read_text().split('\n')]
     path.write_text('\n'.join(content))
 
@@ -63,7 +64,7 @@ def edit_versions(version: str):
     # 4. neofetch script
     print('Editing neofetch...')
     path = Path('neofetch')
-    lines = path.read_text().split('\n')
+    lines = path.read_text().replace("\t", "    ").split('\n')
     version_i = next(i for i, l in enumerate(lines) if l.startswith('version='))
     nf = pv.parse(lines[version_i].replace('version=', ''))
     new = pv.parse(version)
@@ -102,6 +103,7 @@ def post_check():
     """
     Check after changes are made
     """
+    print('Running shellcheck... (This may take a while)')
     subprocess.check_call(shlex.split('shellcheck neofetch'))
 
 
@@ -112,7 +114,7 @@ def create_release(v: str):
     print('Committing changes...')
 
     # 1. Add files
-    subprocess.check_call(['git', 'add', 'hyfetch/constants.py', 'neofetch', 'neofetch.1', 'package.json', 'README.md',
+    subprocess.check_call(['git', 'add', 'hyfetch/__version__.py', 'neofetch', 'neofetch.1', 'package.json', 'README.md',
                            'hyfetch/distros/*'])
 
     # 2. Commit
@@ -128,8 +130,7 @@ def create_release(v: str):
     # 4. Push
     print('Pushing commits...')
     subprocess.check_call(['git', 'push'])
-    subprocess.check_call(['git', 'push', 'origin', v])
-    subprocess.check_call(['git', 'push', 'origin', f'neofetch-{NEOFETCH_NEW_VERSION}'])
+    subprocess.check_call(['git', 'push', 'origin', v, f'neofetch-{NEOFETCH_NEW_VERSION}'])
 
 
 def deploy():
